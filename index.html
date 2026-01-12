@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 
-<!-- Start of Uzera Code Snippet -->
+  <!-- Start of Uzera Code Snippet -->
 <script>
 (function(u,z,a){if(u["a_id"]){return;}u["a_id"]=a;u["dm"]=u.location.hostname;u.uzera=u.uzera||[];u.uzera.q=u.uzera.q||[];['identify','trackEvent'].forEach(function(m){u.uzera[m]=function(){u.uzera.q.push([m,arguments]);};});var s=z.createElement("script");s.async=true;s.src="https://assets.gainserv.in/wrapper.dev.min.js";var t=z.getElementsByTagName("script")[0];t.parentNode.insertBefore(s,t);})(window,document,"SCQNYYO9GN")
 </script>
@@ -310,6 +310,7 @@
       <button class="nav-btn" onclick="showPage('recovery')">2FA</button>
       <button class="nav-btn" onclick="showPage('graphics')">Graphics</button>
       <button class="nav-btn" onclick="showPage('errors')">Errors</button>
+      <button class="nav-btn" onclick="showPage('api')">API</button>
     </div>
   </nav>
 
@@ -1840,6 +1841,112 @@
     </div>
   </div>
 
+  <!-- 23. API PAGE -->
+  <div class="page" id="api">
+    <h1>API Testing</h1>
+    <p class="page-desc"><span class="badge-info">TESTING</span> API calls, error tracking, and performance monitoring</p>
+
+    <div class="info-box"><p>Test various API scenarios including successful calls, errors, and performance metrics. Results are logged below each section.</p></div>
+
+    <div class="card">
+      <h3>API Calls - Success</h3>
+      <p class="text-sm text-muted" style="margin-bottom: var(--spacing-md);">Make successful API requests to public endpoints</p>
+      <div class="flex gap-05" style="flex-wrap: wrap;">
+        <button class="btn btn-primary btn-sm" onclick="apiGetUsers()">GET Users</button>
+        <button class="btn btn-primary btn-sm" onclick="apiGetPosts()">GET Posts</button>
+        <button class="btn btn-primary btn-sm" onclick="apiGetComments()">GET Comments</button>
+        <button class="btn btn-success btn-sm" onclick="apiPostData()">POST Data</button>
+        <button class="btn btn-primary btn-sm" onclick="apiPutData()">PUT Data</button>
+        <button class="btn btn-danger btn-sm" onclick="apiDeleteData()">DELETE Data</button>
+      </div>
+      <div id="apiSuccessLog" class="code-block mt-05" style="max-height: 150px; overflow-y: auto;">Waiting for API call...</div>
+    </div>
+
+    <div class="card">
+      <h3>API Calls - Errors</h3>
+      <p class="text-sm text-muted" style="margin-bottom: var(--spacing-md);">Trigger various API error responses</p>
+      <div class="flex gap-05" style="flex-wrap: wrap;">
+        <button class="btn btn-danger btn-sm" onclick="apiError400()">400 Bad Request</button>
+        <button class="btn btn-danger btn-sm" onclick="apiError401()">401 Unauthorized</button>
+        <button class="btn btn-danger btn-sm" onclick="apiError403()">403 Forbidden</button>
+        <button class="btn btn-danger btn-sm" onclick="apiError404()">404 Not Found</button>
+        <button class="btn btn-danger btn-sm" onclick="apiError500()">500 Server Error</button>
+        <button class="btn btn-danger btn-sm" onclick="apiTimeout()">Timeout</button>
+        <button class="btn btn-danger btn-sm" onclick="apiNetworkError()">Network Error</button>
+      </div>
+      <div id="apiErrorLog" class="code-block mt-05" style="max-height: 150px; overflow-y: auto; color: var(--danger-color);">Waiting for API error...</div>
+    </div>
+
+    <div class="card">
+      <h3>API Performance</h3>
+      <p class="text-sm text-muted" style="margin-bottom: var(--spacing-md);">Test API response times and performance metrics</p>
+      <div class="flex gap-05" style="flex-wrap: wrap;">
+        <button class="btn btn-primary btn-sm" onclick="apiPerformanceFast()">Fast Response</button>
+        <button class="btn btn-primary btn-sm" onclick="apiPerformanceMedium()">Medium Response</button>
+        <button class="btn btn-primary btn-sm" onclick="apiPerformanceSlow()">Slow Response</button>
+        <button class="btn btn-primary btn-sm" onclick="apiPerformanceBatch()">Batch Requests (5x)</button>
+        <button class="btn btn-primary btn-sm" onclick="apiPerformanceParallel()">Parallel Requests</button>
+      </div>
+      <div id="apiPerformanceLog" class="code-block mt-05" style="max-height: 150px; overflow-y: auto;">Waiting for performance test...</div>
+    </div>
+
+    <div class="card">
+      <h3>API Performance Metrics</h3>
+      <p class="text-sm text-muted" style="margin-bottom: var(--spacing-md);">Real-time performance statistics</p>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--spacing-md);">
+        <div class="storage-item" style="flex-direction: column; align-items: flex-start;">
+          <span class="storage-key">Total Requests</span>
+          <span id="metricTotalRequests" style="font-size: var(--font-size-xl); font-weight: 600; color: var(--primary-color);">0</span>
+        </div>
+        <div class="storage-item" style="flex-direction: column; align-items: flex-start;">
+          <span class="storage-key">Success Rate</span>
+          <span id="metricSuccessRate" style="font-size: var(--font-size-xl); font-weight: 600; color: var(--success-color);">0%</span>
+        </div>
+        <div class="storage-item" style="flex-direction: column; align-items: flex-start;">
+          <span class="storage-key">Avg Response Time</span>
+          <span id="metricAvgTime" style="font-size: var(--font-size-xl); font-weight: 600; color: var(--blue-color);">0ms</span>
+        </div>
+        <div class="storage-item" style="flex-direction: column; align-items: flex-start;">
+          <span class="storage-key">Failed Requests</span>
+          <span id="metricFailedRequests" style="font-size: var(--font-size-xl); font-weight: 600; color: var(--danger-color);">0</span>
+        </div>
+      </div>
+      <button class="btn btn-secondary btn-sm mt-05" onclick="resetApiMetrics()">Reset Metrics</button>
+    </div>
+
+    <div class="card">
+      <h3>Custom API Request</h3>
+      <p class="text-sm text-muted" style="margin-bottom: var(--spacing-md);">Make a custom API request</p>
+      <div class="form-group">
+        <label>Method</label>
+        <select id="customApiMethod" style="width: auto; display: inline-block; margin-right: var(--spacing-sm);">
+          <option value="GET">GET</option>
+          <option value="POST">POST</option>
+          <option value="PUT">PUT</option>
+          <option value="DELETE">DELETE</option>
+          <option value="PATCH">PATCH</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>URL</label>
+        <input type="text" id="customApiUrl" placeholder="https://jsonplaceholder.typicode.com/posts/1" value="https://jsonplaceholder.typicode.com/posts/1">
+      </div>
+      <div class="form-group">
+        <label>Request Body (JSON)</label>
+        <textarea id="customApiBody" rows="3" placeholder='{"title": "test", "body": "content"}'></textarea>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="apiCustomRequest()">Send Request</button>
+      <div id="customApiLog" class="code-block mt-05" style="max-height: 200px; overflow-y: auto;">Response will appear here...</div>
+    </div>
+
+    <div class="card">
+      <h3>API Request History</h3>
+      <p class="text-sm text-muted" style="margin-bottom: var(--spacing-md);">Recent API requests made on this page</p>
+      <div id="apiHistoryLog" class="code-block" style="max-height: 250px; overflow-y: auto;">No requests yet...</div>
+      <button class="btn btn-secondary btn-sm mt-05" onclick="clearApiHistory()">Clear History</button>
+    </div>
+  </div>
+
   <!-- MODAL -->
   <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
     <div class="modal" onclick="event.stopPropagation()">
@@ -2630,6 +2737,287 @@
         }
       }
     });
+
+    // API Testing Functions
+    const apiMetrics = {
+      totalRequests: 0,
+      successCount: 0,
+      failedCount: 0,
+      totalTime: 0,
+      history: []
+    };
+
+    function updateApiMetrics() {
+      document.getElementById('metricTotalRequests').textContent = apiMetrics.totalRequests;
+      document.getElementById('metricFailedRequests').textContent = apiMetrics.failedCount;
+      const successRate = apiMetrics.totalRequests > 0
+        ? Math.round((apiMetrics.successCount / apiMetrics.totalRequests) * 100)
+        : 0;
+      document.getElementById('metricSuccessRate').textContent = successRate + '%';
+      const avgTime = apiMetrics.totalRequests > 0
+        ? Math.round(apiMetrics.totalTime / apiMetrics.totalRequests)
+        : 0;
+      document.getElementById('metricAvgTime').textContent = avgTime + 'ms';
+    }
+
+    function resetApiMetrics() {
+      apiMetrics.totalRequests = 0;
+      apiMetrics.successCount = 0;
+      apiMetrics.failedCount = 0;
+      apiMetrics.totalTime = 0;
+      updateApiMetrics();
+      showToast('API metrics reset', 'info');
+    }
+
+    function logApiHistory(method, url, status, time, success) {
+      const timestamp = new Date().toLocaleTimeString();
+      const entry = `[${timestamp}] ${method} ${url} - ${status} (${time}ms)`;
+      apiMetrics.history.unshift(entry);
+      if (apiMetrics.history.length > 50) apiMetrics.history.pop();
+      const historyEl = document.getElementById('apiHistoryLog');
+      if (historyEl) {
+        historyEl.innerHTML = apiMetrics.history.map(h => {
+          const color = h.includes('200') || h.includes('201') ? 'var(--success-color)' : 'var(--danger-color)';
+          return `<div style="color: ${color}">${h}</div>`;
+        }).join('');
+      }
+    }
+
+    function clearApiHistory() {
+      apiMetrics.history = [];
+      document.getElementById('apiHistoryLog').textContent = 'No requests yet...';
+      showToast('API history cleared', 'info');
+    }
+
+    async function makeApiRequest(method, url, body = null, logEl = 'apiSuccessLog') {
+      const startTime = performance.now();
+      apiMetrics.totalRequests++;
+
+      try {
+        const options = {
+          method: method,
+          headers: { 'Content-Type': 'application/json' }
+        };
+        if (body && method !== 'GET') {
+          options.body = JSON.stringify(body);
+        }
+
+        const response = await fetch(url, options);
+        const endTime = performance.now();
+        const duration = Math.round(endTime - startTime);
+        apiMetrics.totalTime += duration;
+
+        const data = await response.json();
+
+        if (response.ok) {
+          apiMetrics.successCount++;
+          const log = document.getElementById(logEl);
+          if (log) {
+            log.innerHTML = `<div style="color: var(--success-color);">[${new Date().toLocaleTimeString()}] ${method} ${url}</div>` +
+              `<div>Status: ${response.status} | Time: ${duration}ms</div>` +
+              `<div style="margin-top: 8px;">${JSON.stringify(data, null, 2).substring(0, 500)}...</div>`;
+          }
+          logApiHistory(method, url, response.status, duration, true);
+          showToast(`${method} request successful (${duration}ms)`, 'success');
+        } else {
+          apiMetrics.failedCount++;
+          const log = document.getElementById(logEl);
+          if (log) {
+            log.innerHTML = `<div>[${new Date().toLocaleTimeString()}] ${method} ${url}</div>` +
+              `<div>Status: ${response.status} ${response.statusText} | Time: ${duration}ms</div>`;
+          }
+          logApiHistory(method, url, response.status, duration, false);
+          showToast(`${method} request failed: ${response.status}`, 'error');
+        }
+
+        updateApiMetrics();
+        return { success: response.ok, status: response.status, data, duration };
+      } catch (error) {
+        const endTime = performance.now();
+        const duration = Math.round(endTime - startTime);
+        apiMetrics.totalTime += duration;
+        apiMetrics.failedCount++;
+
+        const log = document.getElementById(logEl);
+        if (log) {
+          log.innerHTML = `<div>[${new Date().toLocaleTimeString()}] ${method} ${url}</div>` +
+            `<div style="color: var(--danger-color);">Error: ${error.message} | Time: ${duration}ms</div>`;
+        }
+        logApiHistory(method, url, 'ERROR', duration, false);
+        updateApiMetrics();
+        showToast(`${method} request error: ${error.message}`, 'error');
+        return { success: false, error: error.message, duration };
+      }
+    }
+
+    // API Success Functions
+    function apiGetUsers() {
+      makeApiRequest('GET', 'https://jsonplaceholder.typicode.com/users');
+    }
+
+    function apiGetPosts() {
+      makeApiRequest('GET', 'https://jsonplaceholder.typicode.com/posts?_limit=5');
+    }
+
+    function apiGetComments() {
+      makeApiRequest('GET', 'https://jsonplaceholder.typicode.com/comments?_limit=5');
+    }
+
+    function apiPostData() {
+      makeApiRequest('POST', 'https://jsonplaceholder.typicode.com/posts', {
+        title: 'Test Post',
+        body: 'This is a test post created via API',
+        userId: 1
+      });
+    }
+
+    function apiPutData() {
+      makeApiRequest('PUT', 'https://jsonplaceholder.typicode.com/posts/1', {
+        id: 1,
+        title: 'Updated Post',
+        body: 'This post has been updated',
+        userId: 1
+      });
+    }
+
+    function apiDeleteData() {
+      makeApiRequest('DELETE', 'https://jsonplaceholder.typicode.com/posts/1');
+    }
+
+    // API Error Functions
+    function apiError400() {
+      makeApiRequest('POST', 'https://httpstat.us/400', null, 'apiErrorLog');
+    }
+
+    function apiError401() {
+      makeApiRequest('GET', 'https://httpstat.us/401', null, 'apiErrorLog');
+    }
+
+    function apiError403() {
+      makeApiRequest('GET', 'https://httpstat.us/403', null, 'apiErrorLog');
+    }
+
+    function apiError404() {
+      makeApiRequest('GET', 'https://jsonplaceholder.typicode.com/posts/999999', null, 'apiErrorLog');
+    }
+
+    function apiError500() {
+      makeApiRequest('GET', 'https://httpstat.us/500', null, 'apiErrorLog');
+    }
+
+    async function apiTimeout() {
+      const logEl = document.getElementById('apiErrorLog');
+      logEl.innerHTML = '<div>Starting timeout test (10s delay)...</div>';
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+      const startTime = performance.now();
+      apiMetrics.totalRequests++;
+
+      try {
+        const response = await fetch('https://httpstat.us/200?sleep=10000', {
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+      } catch (error) {
+        clearTimeout(timeoutId);
+        const duration = Math.round(performance.now() - startTime);
+        apiMetrics.totalTime += duration;
+        apiMetrics.failedCount++;
+        logEl.innerHTML = `<div>[${new Date().toLocaleTimeString()}] GET https://httpstat.us/200?sleep=10000</div>` +
+          `<div>Error: Request timed out after 3000ms</div>`;
+        logApiHistory('GET', 'httpstat.us/timeout', 'TIMEOUT', duration, false);
+        updateApiMetrics();
+        showToast('Request timed out after 3s', 'error');
+      }
+    }
+
+    function apiNetworkError() {
+      makeApiRequest('GET', 'https://this-domain-does-not-exist-12345.com/api', null, 'apiErrorLog');
+    }
+
+    // API Performance Functions
+    function apiPerformanceFast() {
+      const logEl = document.getElementById('apiPerformanceLog');
+      logEl.innerHTML = '<div>Testing fast response...</div>';
+      makeApiRequest('GET', 'https://jsonplaceholder.typicode.com/posts/1', null, 'apiPerformanceLog');
+    }
+
+    function apiPerformanceMedium() {
+      const logEl = document.getElementById('apiPerformanceLog');
+      logEl.innerHTML = '<div>Testing medium response (1s delay)...</div>';
+      makeApiRequest('GET', 'https://httpstat.us/200?sleep=1000', null, 'apiPerformanceLog');
+    }
+
+    function apiPerformanceSlow() {
+      const logEl = document.getElementById('apiPerformanceLog');
+      logEl.innerHTML = '<div>Testing slow response (3s delay)...</div>';
+      makeApiRequest('GET', 'https://httpstat.us/200?sleep=3000', null, 'apiPerformanceLog');
+    }
+
+    async function apiPerformanceBatch() {
+      const logEl = document.getElementById('apiPerformanceLog');
+      logEl.innerHTML = '<div>Running batch requests (5 sequential)...</div>';
+
+      const results = [];
+      for (let i = 1; i <= 5; i++) {
+        const result = await makeApiRequest('GET', `https://jsonplaceholder.typicode.com/posts/${i}`, null, 'apiPerformanceLog');
+        results.push(result);
+        logEl.innerHTML += `<div>Request ${i}: ${result.duration}ms</div>`;
+      }
+
+      const totalTime = results.reduce((sum, r) => sum + r.duration, 0);
+      const avgTime = Math.round(totalTime / results.length);
+      logEl.innerHTML += `<div style="margin-top: 8px; color: var(--primary-color);">Total: ${totalTime}ms | Average: ${avgTime}ms</div>`;
+      showToast(`Batch complete: ${avgTime}ms avg`, 'success');
+    }
+
+    async function apiPerformanceParallel() {
+      const logEl = document.getElementById('apiPerformanceLog');
+      logEl.innerHTML = '<div>Running parallel requests (5 concurrent)...</div>';
+
+      const startTime = performance.now();
+      const promises = [1, 2, 3, 4, 5].map(i =>
+        makeApiRequest('GET', `https://jsonplaceholder.typicode.com/posts/${i}`, null, 'apiPerformanceLog')
+      );
+
+      const results = await Promise.all(promises);
+      const totalTime = Math.round(performance.now() - startTime);
+
+      logEl.innerHTML = '<div>Parallel requests completed:</div>';
+      results.forEach((r, i) => {
+        logEl.innerHTML += `<div>Request ${i + 1}: ${r.duration}ms</div>`;
+      });
+      logEl.innerHTML += `<div style="margin-top: 8px; color: var(--primary-color);">Total parallel time: ${totalTime}ms</div>`;
+      showToast(`Parallel complete: ${totalTime}ms total`, 'success');
+    }
+
+    // Custom API Request
+    async function apiCustomRequest() {
+      const method = document.getElementById('customApiMethod').value;
+      const url = document.getElementById('customApiUrl').value;
+      const bodyText = document.getElementById('customApiBody').value;
+
+      let body = null;
+      if (bodyText && method !== 'GET') {
+        try {
+          body = JSON.parse(bodyText);
+        } catch (e) {
+          showToast('Invalid JSON in request body', 'error');
+          return;
+        }
+      }
+
+      const result = await makeApiRequest(method, url, body, 'customApiLog');
+
+      if (result.data) {
+        document.getElementById('customApiLog').innerHTML =
+          `<div style="color: ${result.success ? 'var(--success-color)' : 'var(--danger-color)'};">` +
+          `Status: ${result.status || 'Error'} | Time: ${result.duration}ms</div>` +
+          `<pre style="margin-top: 8px; white-space: pre-wrap;">${JSON.stringify(result.data, null, 2)}</pre>`;
+      }
+    }
   </script>
 </body>
 </html>
