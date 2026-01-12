@@ -73,6 +73,12 @@
         <button class="btn btn-primary btn-sm" onclick="simulateAPICall('/api/payment')">GET Payment (with card)</button>
         <button class="btn btn-primary btn-sm" onclick="simulateAPICall('/api/auth')">GET Auth (with token)</button>
       </div>
+      <p class="text-sm text-muted" style="margin: var(--spacing-md) 0 var(--spacing-sm);">Test failed API endpoints</p>
+      <div class="flex gap-05" style="flex-wrap: wrap;">
+        <button class="btn btn-danger btn-sm" onclick="simulateFailedAPICall('/api/user')">GET User (Failed)</button>
+        <button class="btn btn-danger btn-sm" onclick="simulateFailedAPICall('/api/payment')">GET Payment (Failed)</button>
+        <button class="btn btn-danger btn-sm" onclick="simulateFailedAPICall('/api/auth')">GET Auth (Failed)</button>
+      </div>
       <div id="apiResponseDisplay" class="code-block mt-05" style="max-height: 150px; overflow-y: auto; display: none;"></div>
     </div>
 
@@ -143,6 +149,52 @@
   <div class="toast-container" id="toastContainer"></div>
   <script src="js/main.js"></script>
   <script>
+    // Simulate failed API call function
+    async function simulateFailedAPICall(endpoint) {
+      const display = document.getElementById('apiResponseDisplay');
+      display.style.display = 'block';
+      display.textContent = 'Loading...';
+
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // Generate error responses based on endpoint
+      const errorResponses = {
+        '/api/user': {
+          status: 404,
+          error: 'Not Found',
+          message: 'User not found',
+          endpoint: endpoint,
+          timestamp: new Date().toISOString()
+        },
+        '/api/payment': {
+          status: 500,
+          error: 'Internal Server Error',
+          message: 'Payment service unavailable',
+          endpoint: endpoint,
+          timestamp: new Date().toISOString()
+        },
+        '/api/auth': {
+          status: 401,
+          error: 'Unauthorized',
+          message: 'Invalid or expired token',
+          endpoint: endpoint,
+          timestamp: new Date().toISOString()
+        }
+      };
+
+      const errorData = errorResponses[endpoint] || {
+        status: 500,
+        error: 'Unknown Error',
+        message: 'An unexpected error occurred',
+        endpoint: endpoint
+      };
+
+      display.style.color = 'var(--danger-color)';
+      display.textContent = JSON.stringify(errorData, null, 2);
+      showToast(`API Error: ${errorData.status} ${errorData.error}`, 'error');
+    }
+
     // API functions specific to this page
     async function apiGetUsers() {
       const log = document.getElementById('apiSuccessLog');
