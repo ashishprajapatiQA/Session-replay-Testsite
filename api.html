@@ -208,6 +208,72 @@
   <div class="toast-container" id="toastContainer"></div>
   <script src="js/main.js"></script>
   <script>
+    // Load error counts from localStorage (persists across pages)
+    function loadErrorCounts() {
+      const stored = localStorage.getItem('errorCounts');
+      if (stored) {
+        return JSON.parse(stored);
+      }
+      return {
+        jsErrors: 0,
+        networkErrors: 0,
+        serverErrors: 0,
+        clientErrors: 0,
+        resourceErrors: 0
+      };
+    }
+
+    // Save error counts to localStorage
+    function saveErrorCounts() {
+      localStorage.setItem('errorCounts', JSON.stringify(errorCounts));
+    }
+
+    // Initialize error counts from localStorage
+    const errorCounts = loadErrorCounts();
+
+    // Update error count display
+    function updateErrorDisplay() {
+      document.getElementById('jsErrorCount').textContent = errorCounts.jsErrors;
+      document.getElementById('networkErrorCount').textContent = errorCounts.networkErrors;
+      document.getElementById('serverErrorCount').textContent = errorCounts.serverErrors;
+      document.getElementById('clientErrorCount').textContent = errorCounts.clientErrors;
+      document.getElementById('resourceErrorCount').textContent = errorCounts.resourceErrors;
+    }
+
+    // Reset error counts
+    function resetErrorCounts() {
+      errorCounts.jsErrors = 0;
+      errorCounts.networkErrors = 0;
+      errorCounts.serverErrors = 0;
+      errorCounts.clientErrors = 0;
+      errorCounts.resourceErrors = 0;
+      saveErrorCounts();
+      updateErrorDisplay();
+      showToast('Error counts reset', 'success');
+    }
+
+    // Increment error count based on type
+    function trackError(type, statusCode = null) {
+      if (statusCode) {
+        if (statusCode >= 500) {
+          errorCounts.serverErrors++;
+        } else if (statusCode >= 400) {
+          errorCounts.clientErrors++;
+        }
+      } else {
+        switch(type) {
+          case 'js': errorCounts.jsErrors++; break;
+          case 'network': errorCounts.networkErrors++; break;
+          case 'resource': errorCounts.resourceErrors++; break;
+        }
+      }
+      saveErrorCounts();
+      updateErrorDisplay();
+    }
+
+    // Update display on page load
+    updateErrorDisplay();
+
     // Simulate API call with sensitive data responses
     async function simulateAPICall(endpoint) {
       const display = document.getElementById('apiResponseDisplay');
@@ -259,53 +325,6 @@
         display.textContent = JSON.stringify({ error: e.message }, null, 2);
         showToast('API Error', 'error');
       }
-    }
-
-    // Error tracking counts
-    const errorCounts = {
-      jsErrors: 0,
-      networkErrors: 0,
-      serverErrors: 0,
-      clientErrors: 0,
-      resourceErrors: 0
-    };
-
-    // Update error count display
-    function updateErrorDisplay() {
-      document.getElementById('jsErrorCount').textContent = errorCounts.jsErrors;
-      document.getElementById('networkErrorCount').textContent = errorCounts.networkErrors;
-      document.getElementById('serverErrorCount').textContent = errorCounts.serverErrors;
-      document.getElementById('clientErrorCount').textContent = errorCounts.clientErrors;
-      document.getElementById('resourceErrorCount').textContent = errorCounts.resourceErrors;
-    }
-
-    // Reset error counts
-    function resetErrorCounts() {
-      errorCounts.jsErrors = 0;
-      errorCounts.networkErrors = 0;
-      errorCounts.serverErrors = 0;
-      errorCounts.clientErrors = 0;
-      errorCounts.resourceErrors = 0;
-      updateErrorDisplay();
-      showToast('Error counts reset', 'success');
-    }
-
-    // Increment error count based on type
-    function trackError(type, statusCode = null) {
-      if (statusCode) {
-        if (statusCode >= 500) {
-          errorCounts.serverErrors++;
-        } else if (statusCode >= 400) {
-          errorCounts.clientErrors++;
-        }
-      } else {
-        switch(type) {
-          case 'js': errorCounts.jsErrors++; break;
-          case 'network': errorCounts.networkErrors++; break;
-          case 'resource': errorCounts.resourceErrors++; break;
-        }
-      }
-      updateErrorDisplay();
     }
 
     // Status code error definitions
