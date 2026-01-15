@@ -337,52 +337,32 @@
       }
     }
 
-    // API endpoints for different error codes using ReqRes.in
-    const errorEndpoints = {
-      // 4xx Client Errors
-      400: { url: 'https://reqres.in/api/register', method: 'POST', body: { email: 'test' } }, // Missing password
-      401: { url: 'https://reqres.in/api/login', method: 'POST', body: { email: 'invalid@email.com' } }, // Invalid login
-      403: { url: 'https://reqres.in/api/users/forbidden', method: 'GET', body: null }, // Forbidden resource
-      404: { url: 'https://reqres.in/api/users/9999', method: 'GET', body: null }, // User not found
-      // 5xx Server Errors - ReqRes doesn't have real 5xx, so we use alternative approaches
-      500: { url: 'https://reqres.in/api/unknown/99999', method: 'GET', body: null },
-      502: { url: 'https://reqres.in/api/unknown/99998', method: 'GET', body: null },
-      503: { url: 'https://reqres.in/api/unknown/99997', method: 'GET', body: null }
-    };
-
-    // Trigger specific status code error with real API call
+    // Trigger specific status code error using httpbin.org
+    // httpbin.org/status/:code returns the exact HTTP status code requested
     async function triggerStatusError(statusCode) {
       const display = document.getElementById('apiResponseDisplay');
       display.style.display = 'block';
       display.textContent = 'Loading...';
       display.style.color = '';
 
-      const endpoint = errorEndpoints[statusCode];
-      const url = endpoint ? endpoint.url : `https://reqres.in/api/users/9999`;
+      // httpbin.org reliably returns the exact status code you request
+      const url = `https://httpbin.org/status/${statusCode}`;
 
       try {
-        const options = {
-          method: endpoint ? endpoint.method : 'GET',
-          headers: { 'Content-Type': 'application/json' }
-        };
+        const res = await fetch(url);
 
-        if (endpoint && endpoint.body) {
-          options.body = JSON.stringify(endpoint.body);
-        }
-
-        const res = await fetch(url, options);
-
-        // Try to parse response body
+        // Try to parse response body (httpbin may return empty or text)
         let responseBody = null;
         const contentType = res.headers.get('content-type');
         if (contentType && contentType.includes('application/json')) {
           try {
             responseBody = await res.json();
           } catch (e) {
-            responseBody = { parseError: 'Could not parse JSON response' };
+            responseBody = null;
           }
         } else {
-          responseBody = await res.text();
+          const text = await res.text();
+          responseBody = text || null;
         }
 
         // Build complete error response showing real API data
@@ -390,7 +370,7 @@
           status: res.status,
           statusText: res.statusText,
           url: url,
-          method: options.method,
+          method: 'GET',
           response: responseBody,
           timestamp: new Date().toISOString()
         };
