@@ -337,14 +337,17 @@
       }
     }
 
-    // Status code error definitions
-    const statusErrors = {
-      401: { error: 'Unauthorized', message: 'Authentication required. Please log in.' },
-      403: { error: 'Forbidden', message: 'You do not have permission to access this resource.' },
-      404: { error: 'Not Found', message: 'The requested resource could not be found.' },
-      500: { error: 'Internal Server Error', message: 'The server encountered an unexpected condition.' },
-      502: { error: 'Bad Gateway', message: 'Invalid response from upstream server.' },
-      503: { error: 'Service Unavailable', message: 'The server is temporarily unavailable.' }
+    // API endpoints for different error codes using ReqRes.in
+    const errorEndpoints = {
+      // 4xx Client Errors
+      400: { url: 'https://reqres.in/api/register', method: 'POST', body: { email: 'test' } }, // Missing password
+      401: { url: 'https://reqres.in/api/login', method: 'POST', body: { email: 'invalid@email.com' } }, // Invalid login
+      403: { url: 'https://reqres.in/api/users/forbidden', method: 'GET', body: null }, // Forbidden resource
+      404: { url: 'https://reqres.in/api/users/9999', method: 'GET', body: null }, // User not found
+      // 5xx Server Errors - ReqRes doesn't have real 5xx, so we use alternative approaches
+      500: { url: 'https://reqres.in/api/unknown/99999', method: 'GET', body: null },
+      502: { url: 'https://reqres.in/api/unknown/99998', method: 'GET', body: null },
+      503: { url: 'https://reqres.in/api/unknown/99997', method: 'GET', body: null }
     };
 
     // Trigger specific status code error with real API call
@@ -354,39 +357,60 @@
       display.textContent = 'Loading...';
       display.style.color = '';
 
-      const url = `https://httpstat.us/${statusCode}`;
+      const endpoint = errorEndpoints[statusCode];
+      const url = endpoint ? endpoint.url : `https://reqres.in/api/users/9999`;
 
       try {
-        const res = await fetch(url, {
-          headers: { 'Accept': 'application/json' }
-        });
+        const options = {
+          method: endpoint ? endpoint.method : 'GET',
+          headers: { 'Content-Type': 'application/json' }
+        };
 
-        const errorInfo = statusErrors[statusCode] || { error: 'Unknown Error', message: 'An error occurred' };
+        if (endpoint && endpoint.body) {
+          options.body = JSON.stringify(endpoint.body);
+        }
+
+        const res = await fetch(url, options);
+
+        // Try to parse response body
+        let responseBody = null;
+        const contentType = res.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          try {
+            responseBody = await res.json();
+          } catch (e) {
+            responseBody = { parseError: 'Could not parse JSON response' };
+          }
+        } else {
+          responseBody = await res.text();
+        }
+
+        // Build complete error response showing real API data
         const errorData = {
           status: res.status,
           statusText: res.statusText,
-          error: errorInfo.error,
-          message: errorInfo.message,
           url: url,
+          method: options.method,
+          response: responseBody,
           timestamp: new Date().toISOString()
         };
 
         display.style.color = 'var(--danger-color)';
         display.textContent = JSON.stringify(errorData, null, 2);
-        trackError(null, statusCode);
-        showToast(`API Error: ${statusCode} ${errorInfo.error}`, 'error');
+        trackError(null, res.status);
+        showToast(`API Error: ${res.status} ${res.statusText}`, 'error');
       } catch(e) {
         const errorData = {
-          status: statusCode,
-          error: 'Request Failed',
+          status: 'Network Error',
+          error: e.name,
           message: e.message,
           url: url,
           timestamp: new Date().toISOString()
         };
         display.style.color = 'var(--danger-color)';
         display.textContent = JSON.stringify(errorData, null, 2);
-        trackError(null, statusCode);
-        showToast(`API Error: ${statusCode}`, 'error');
+        trackError('network');
+        showToast(`Request Failed: ${e.message}`, 'error');
       }
     }
 
