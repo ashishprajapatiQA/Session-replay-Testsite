@@ -8,7 +8,9 @@
 // app.gainserv.com
 //(function(u,z,a){if(u["a_id"]){return;}u["a_id"]=a;u["dm"]=u.location.hostname;u.uzera=u.uzera||[];u.uzera.q=u.uzera.q||[];['identify','trackEvent'].forEach(function(m){u.uzera[m]=function(){u.uzera.q.push([m,arguments]);};});var s=z.createElement("script");s.async=true;s.src="https://assets.gainserv.com/wrapper.net.min.js";var t=z.getElementsByTagName("script")[0];t.parentNode.insertBefore(s,t);})(window,document,"6N5GM9Z3MB");
 // qa.gainserv.com (AWS)
-(function(u,z,a){if(u["a_id"]){return;}u["a_id"]=a;u["dm"]=u.location.hostname;u.uzera=u.uzera||[];u.uzera.q=u.uzera.q||[];['identify','trackEvent'].forEach(function(m){u.uzera[m]=function(){u.uzera.q.push([m,arguments]);};});var s=z.createElement("script");s.async=true;s.src="https://qaassets.gainserv.com/wrapper.qa.min.js";var t=z.getElementsByTagName("script")[0];t.parentNode.insertBefore(s,t);})(window,document,"6N5GM9Z3MB");
+//(function(u,z,a){if(u["a_id"]){return;}u["a_id"]=a;u["dm"]=u.location.hostname;u.uzera=u.uzera||[];u.uzera.q=u.uzera.q||[];['identify','trackEvent'].forEach(function(m){u.uzera[m]=function(){u.uzera.q.push([m,arguments]);};});var s=z.createElement("script");s.async=true;s.src="https://qaassets.gainserv.com/wrapper.qa.min.js";var t=z.getElementsByTagName("script")[0];t.parentNode.insertBefore(s,t);})(window,document,"6N5GM9Z3MB");
+// qa.gainserv.com (AWS) ashish.prajapati@uzera.com
+(function(u,z,a){if(u["a_id"]){return;}u["a_id"]=a;u["dm"]=u.location.hostname;u.uzera=u.uzera||[];u.uzera.q=u.uzera.q||[];['identify','trackEvent'].forEach(function(m){u.uzera[m]=function(){u.uzera.q.push([m,arguments]);};});var s=z.createElement("script");s.async=true;s.src="https://qaassets.gainserv.com/wrapper.qa.min.js";var t=z.getElementsByTagName("script")[0];t.parentNode.insertBefore(s,t);})(window,document,"8ZZYR1NN6T");
 //GTM
 // (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 // new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
